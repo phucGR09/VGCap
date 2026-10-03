@@ -1,490 +1,428 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="description"
-        content="Deformable Neural Radiance Fields creates free-viewpoint portraits (nerfies) from casually captured videos.">
-  <meta name="keywords" content="Nerfies, D-NeRF, NeRF">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nerfies: Deformable Neural Radiance Fields</title>
+  <title>VG-Cap: Grounding What Matters</title>
+  <meta name="description"
+        content="VG-Cap selectively conditions news image captioning on visually grounded article entities, with an Entity Heuristic Scorer and Two-Stage Length Control. MMM 2027.">
+  <meta name="keywords"
+        content="VG-Cap, visual grounding, selective entity conditioning, entity selection, retrieval-augmented generation, event-enriched captioning, news image captioning, OpenEvents">
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-
-    gtag('js', new Date());
-
-    gtag('config', 'G-PYVRSFMDRL');
-  </script>
-
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
 
   <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="icon" href="./static/images/favicon.svg">
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/index.js"></script>
 </head>
 <body>
 
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-  <div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="https://keunhong.com">
-      <span class="icon">
-          <i class="fas fa-home"></i>
-      </span>
-      </a>
-
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">
-          More Research
-        </a>
-        <div class="navbar-dropdown">
-          <a class="navbar-item" href="https://hypernerf.github.io">
-            HyperNeRF
-          </a>
-          <a class="navbar-item" href="https://nerfies.github.io">
-            Nerfies
-          </a>
-          <a class="navbar-item" href="https://latentfusion.github.io">
-            LatentFusion
-          </a>
-          <a class="navbar-item" href="https://photoshape.github.io">
-            PhotoShape
-          </a>
-        </div>
-      </div>
+<!-- ================================================================ NAV -->
+<nav class="topnav" id="topnav" aria-label="Sections">
+  <div class="topnav-inner">
+    <a class="topnav-brand" href="#top">VG-Cap</a>
+    <button class="topnav-burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="topnav-links" id="nav-links">
+      <a href="#method">Method</a>
+      <a href="#examples">Examples</a>
+      <a href="#results">Results</a>
+      <a href="#analysis">Analysis</a>
+      <a href="#bibtex">BibTeX</a>
     </div>
-
   </div>
+  <div class="scroll-progress" id="scroll-progress"></div>
 </nav>
 
+<!-- ================================================================ HERO -->
+<header class="hero-block" id="top">
+  <div class="wrap narrow has-text-centered">
+    <h1 class="paper-title">
+      <span class="wordmark">VG-Cap</span>
+      Grounding What Matters: Selective Entity Conditioning for Event-Enriched News Image Captioning
+    </h1>
 
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Nerfies: Deformable Neural Radiance Fields</h1>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              <a href="https://keunhong.com">Keunhong Park</a><sup>1</sup>,</span>
-            <span class="author-block">
-              <a href="https://utkarshsinha.com">Utkarsh Sinha</a><sup>2</sup>,</span>
-            <span class="author-block">
-              <a href="https://jonbarron.info">Jonathan T. Barron</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="http://sofienbouaziz.com">Sofien Bouaziz</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://www.danbgoldman.com">Dan B Goldman</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://homes.cs.washington.edu/~seitz/">Steven M. Seitz</a><sup>1,2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="http://www.ricardomartinbrualla.com">Ricardo Martin-Brualla</a><sup>2</sup>
-            </span>
-          </div>
+    <div class="authors">
+      <span class="author">Van-Phuc Phan<sup>1,2★</sup><a class="orcid" href="https://orcid.org/0009-0007-4407-4246" aria-label="ORCID of Van-Phuc Phan"><i class="ai ai-orcid"></i></a></span>
+      <span class="author">Minh-Tan Pham<sup>1,2★</sup><a class="orcid" href="https://orcid.org/0009-0009-0549-4699" aria-label="ORCID of Minh-Tan Pham"><i class="ai ai-orcid"></i></a></span>
+      <span class="author">Mai-Khiem Tran<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0001-5460-0229" aria-label="ORCID of Mai-Khiem Tran"><i class="ai ai-orcid"></i></a></span>
+      <span class="author">Trong-Le Do<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0002-2906-0360" aria-label="ORCID of Trong-Le Do"><i class="ai ai-orcid"></i></a></span>
+      <span class="author">Hai-Dang Nguyen<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0003-0888-8908" aria-label="ORCID of Hai-Dang Nguyen"><i class="ai ai-orcid"></i></a></span>
+      <span class="author">Tam V. Nguyen<sup>3</sup><a class="orcid" href="https://orcid.org/0000-0003-0236-7992" aria-label="ORCID of Tam V. Nguyen"><i class="ai ai-orcid"></i></a></span>
+      <span class="author">Minh-Triet Tran<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0003-3046-3041" aria-label="ORCID of Minh-Triet Tran"><i class="ai ai-orcid"></i></a></span>
+      <span class="author">Trung-Nghia Le<sup>1,2✉</sup><a class="orcid" href="https://orcid.org/0000-0002-7363-2610" aria-label="ORCID of Trung-Nghia Le"><i class="ai ai-orcid"></i></a></span>
+    </div>
 
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>University of Washington,</span>
-            <span class="author-block"><sup>2</sup>Google Research</span>
-          </div>
+    <div class="affiliations">
+      <span><sup>1</sup>University of Science, Ho Chi Minh City, Vietnam</span>
+      <span><sup>2</sup>Vietnam National University, Ho Chi Minh City, Vietnam</span>
+      <span><sup>3</sup>University of Dayton, Ohio, United States</span>
+    </div>
+    <div class="author-notes">
+      <span>★ Equal contribution</span>
+      <span>✉ Corresponding author: ltnghia@fit.hcmus.edu.vn</span>
+    </div>
 
-          <div class="column has-text-centered">
-            <div class="publication-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href="https://arxiv.org/pdf/2011.12948"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://arxiv.org/abs/2011.12948"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-              <!-- Video Link. -->
-              <span class="link-block">
-                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                </a>
-              </span>
-              <!-- Code Link. -->
-              <span class="link-block">
-                <a href="https://github.com/google/nerfies"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
-              <!-- Dataset Link. -->
-              <span class="link-block">
-                <a href="https://github.com/google/nerfies/releases/tag/0.1"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="far fa-images"></i>
-                  </span>
-                  <span>Data</span>
-                  </a>
-            </div>
+    <!-- Link buttons. They have no href yet: add  href="..."  to activate one
+         (the "soon" badge disappears automatically). -->
+    <div class="link-row">
+      <a class="link-btn" data-link="paper"><i class="fas fa-file-pdf"></i><span>Paper</span><em class="soon">soon</em></a>
+      <a class="link-btn" data-link="arxiv"><i class="ai ai-arxiv"></i><span>arXiv</span><em class="soon">soon</em></a>
+      <a class="link-btn" data-link="code"><i class="fab fa-github"></i><span>Code</span><em class="soon">soon</em></a>
+      <a class="link-btn" href="#bibtex"><i class="fas fa-quote-right"></i><span>BibTeX</span></a>
+    </div>
 
-          </div>
+    <!-- Institution logos: add images to static/images/logos/ and replace the placeholders. -->
+    <div class="logo-strip" data-placeholder-block>
+      <div class="ph ph-logo">HCMUS logo<small>static/images/logos/hcmus.png</small></div>
+      <div class="ph ph-logo">VNU-HCM logo<small>static/images/logos/vnuhcm.png</small></div>
+      <div class="ph ph-logo">U. Dayton logo<small>static/images/logos/udayton.png</small></div>
+    </div>
+  </div>
+</header>
+
+<!-- ================================================================ TL;DR + TEASER -->
+<section class="block" id="tldr">
+  <div class="wrap">
+    <p class="tldr">
+      <span class="tldr-tag">TL;DR</span>
+      News articles name far more people, places and events than a photo shows.
+      <b>VG-Cap</b> scores every article entity for <b>visual groundedness</b> and lets only the grounded ones
+      into the caption, both in the prompt and in post-generation enrichment. <b>Two-Stage Length Control</b>
+      keeps captions near the 104-word target.
+    </p>
+
+    <div id="teaser" class="teaser"></div>
+
+    <div class="stat-row">
+      <div class="stat-tile">
+        <div class="stat-label">Overall Score</div>
+        <div class="stat-value">0.6219</div>
+        <div class="stat-delta up">+0.0122 vs ENRIC</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">CIDEr</div>
+        <div class="stat-value">0.265</div>
+        <div class="stat-delta up">+0.008 vs ENRIC</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">CLIPScore</div>
+        <div class="stat-value">0.858</div>
+        <div class="stat-delta up">+0.025 vs ENRIC</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Entities per caption</div>
+        <div class="stat-value">7.59 <span class="arrow">→</span> 6.76</div>
+        <div class="stat-delta neutral">same 104-word length</div>
+      </div>
+    </div>
+    <p class="stat-foot">OpenEvents-V1 public test · same retrieval backbone as ENRIC</p>
+  </div>
+</section>
+
+<!-- ================================================================ ABSTRACT -->
+<section class="block alt" id="abstract">
+  <div class="wrap narrow">
+    <h2 class="section-title">Abstract</h2>
+    <p class="abstract">
+      News image captioning requires models to connect visual evidence with external article context to identify
+      depicted people, locations, events, and their broader significance. Existing retrieval-augmented methods
+      typically inject all named entities extracted from the retrieved article into the captioning pipeline.
+      However, news articles often mention secondary actors and background events that are not depicted, leading
+      to unsupported descriptions and inefficient use of the caption budget. We introduce VG-Cap, a
+      retrieval-augmented news captioning framework that selectively incorporates entities according to their
+      estimated visual groundedness. Our Entity Heuristic Scorer ranks candidate entities using their presence
+      across visual and textual context, position within the article, and semantic type. A unified gating
+      mechanism applies the same entity selection to both prompt-time entity conditioning and post-generation
+      enrichment, preventing rejected entities from being introduced through these explicit entity pathways. We
+      further introduce Two-Stage Length Control mechanism that combines bounded generation with
+      entity-preserving semantic normalization. Experiments on the OpenEvents-V1 dataset demonstrate that VG-Cap
+      consistently outperforms the strongest baselines. The results further show that selective entity grounding
+      improves the relevance and semantic alignment of generated news captions by reducing unnecessary contextual
+      entities.
+    </p>
+  </div>
+</section>
+
+<!-- ================================================================ CONTRIBUTIONS -->
+<section class="block" id="contributions">
+  <div class="wrap">
+    <h2 class="section-title">Contributions</h2>
+    <div class="grid-3">
+      <div class="contrib">
+        <div class="contrib-icon c-retrieval-bg"><i class="fas fa-layer-group"></i></div>
+        <h4>VG-Cap framework</h4>
+        <p>A retrieval-augmented framework for event-enriched captioning that makes the use of external knowledge <b>selective</b> and visually grounded.</p>
+      </div>
+      <div class="contrib">
+        <div class="contrib-icon c-scorer-bg"><i class="fas fa-sliders-h"></i></div>
+        <h4>Entity Heuristic Scorer</h4>
+        <p>Scores article entities by contextual presence, document position and semantic type. One selection gates <b>both</b> prompt injection and post-generation enrichment.</p>
+      </div>
+      <div class="contrib">
+        <div class="contrib-icon c-length-bg"><i class="fas fa-ruler-horizontal"></i></div>
+        <h4>Two-Stage Length Control</h4>
+        <p>Bounded generation followed by entity-preserving semantic normalization reduces the length mismatch without dropping key event information.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ METHOD -->
+<section class="block alt" id="method">
+  <div class="wrap">
+    <h2 class="section-title">Method</h2>
+    <p class="section-lead">
+      Two stages: <b class="c-retrieval">article retrieval</b> (fixed, from ENRIC), then
+      <b class="c-context">context-grounded caption generation</b>. Click a step to see it in the figure.
+    </p>
+
+    <div class="stepper" id="stepper" role="tablist">
+      <button class="step is-active" data-step="0" role="tab"><span class="step-n c-retrieval-bg">1</span>Retrieval</button>
+      <button class="step" data-step="1" role="tab"><span class="step-n c-context-bg">2</span>Context</button>
+      <button class="step" data-step="2" role="tab"><span class="step-n c-scorer-bg">3</span>Entity Scorer</button>
+      <button class="step" data-step="3" role="tab"><span class="step-n c-length-bg">4</span>Length Control</button>
+      <button class="step" data-step="4" role="tab"><span class="step-n c-gen-bg">5</span>Unified Conditioning</button>
+    </div>
+
+    <div class="method-grid">
+      <figure class="overview-fig" id="overview-fig">
+        <img src="./static/images/figures/overview.png" class="zoomable"
+             alt="Overview of VG-Cap: article retrieval and re-ranking, then context construction, entity heuristic scorer, caption generation and two-stage length control.">
+        <div class="fig-highlight" id="fig-highlight"></div>
+        <button class="fig-all" id="fig-all" title="Show the whole figure"><i class="fas fa-expand"></i></button>
+      </figure>
+
+      <div class="step-panels">
+        <div class="step-panel is-active" data-step="0">
+          <h3 class="c-retrieval">1 · Article Retrieval &amp; Re-ranking</h3>
+          <p>VG-Cap reuses ENRIC's retrieval backbone, unchanged. InternVL-14B encodes the query image and the corpus (&gt;400K images), and the top-<i>K</i> (<i>K</i> = 15) candidates are kept by cosine similarity.</p>
+          <p>An <b>uncertainty detector</b> checks three signals: the entropy of the top-<i>K</i> distribution, the gap between the top-1 and top-2 scores, and the top-1 similarity. For uncertain queries only, caption-based text similarity is blended in:</p>
+          <div class="eq">\[ s_{\mathrm{rerank}}(q,x_i) = \lambda\, s_{\mathrm{img}}(q,x_i) + (1-\lambda)\, s_{\mathrm{text}}(q,x_i) \]</div>
+          <p class="tiny muted">The highest-scoring candidate gives the retrieved article. Retrieval is identical to ENRIC in every experiment.</p>
+        </div>
+        <div class="step-panel" data-step="1">
+          <h3 class="c-context">2 · Context Construction</h3>
+          <p>The article covers much more than the depicted scene, so VG-Cap organizes the available information into three groups:</p>
+          <div class="eq">\[ \mathcal{C} = \{\, \mathcal{C}_{\mathrm{article}},\ \mathcal{C}_{\mathrm{image}},\ \mathcal{C}_{\mathrm{entity}} \,\} \]</div>
+          <ul class="ticks">
+            <li><b>Article context</b>: a summary plus question–answer pairs (who, where, when, why, how).</li>
+            <li><b>Image context</b>: a VLM-generated description of the query image plus the editorial caption of the retrieved image.</li>
+            <li><b>Entity context</b>: named entities from the article. This is the only group <b>filtered by the scorer</b>.</li>
+          </ul>
+        </div>
+        <div class="step-panel" data-step="2">
+          <h3 class="c-scorer">3 · Entity Heuristic Scorer</h3>
+          <p>Candidates come from NER over the article plus LLM keyword lists, merged by substring-aware deduplication. Each candidate gets a groundedness score:</p>
+          <div class="eq">\[ S(e) = \max\!\Big(0,\ \sum_{f\in\mathcal{F}} w_f\,\phi_f(e)\Big) \]</div>
+          <div class="eq">\[ \mathcal{E}^{*} = \operatorname{TopK}_{K=10}\big(\{\, e\in\mathcal{E} : S(e)\geq 3.0 \,\}\big) \]</div>
+        </div>
+        <div class="step-panel" data-step="3">
+          <h3 class="c-length">4 · Two-Stage Length Control</h3>
+          <p>Length is regulated twice: the prompt bounds generation to a range, then a normalizer brings the caption to the target length <i>L</i>* = 104 words.</p>
+          <div class="eq">\[ \hat{y} = G_\theta\big(q, \mathcal{C}, \mathcal{E}^{*};\ L_{\min}, L_{\max}\big), \qquad y = \mathcal{N}\big(\hat{y};\ L^{*}\big) \]</div>
+        </div>
+        <div class="step-panel" data-step="4">
+          <h3 class="c-gen">5 · Unified Entity Conditioning</h3>
+          <p>The <b>same</b> selected set \(\mathcal{E}^{*}\) is passed to both entity pathways:</p>
+          <div class="eq">\[ \hat{y} = G_\theta\big(q,\ \mathcal{C}_{\mathrm{article}},\ \mathcal{C}_{\mathrm{image}},\ \mathcal{E}^{*}\big), \qquad y = \mathcal{N}\big(\hat{y},\ \mathcal{E}^{*}\big) \]</div>
+          <ul class="ticks">
+            <li>An entity rejected by the scorer <b>cannot come back</b> through post-generation enrichment.</li>
+            <li>An entity selected as grounded <b>stays available</b> during normalization.</li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <video id="teaser" autoplay muted loop playsinline height="100%">
-        <source src="./static/videos/teaser.mp4"
-                type="video/mp4">
-      </video>
-      <h2 class="subtitle has-text-centered">
-        <span class="dnerf">Nerfies</span> turns selfie videos from your phone into
-        free-viewpoint
-        portraits.
-      </h2>
+<!-- ================================================================ EXAMPLES -->
+<section class="block" id="examples">
+  <div class="wrap">
+    <h2 class="section-title">Qualitative Examples</h2>
+    <p class="section-lead">
+      Captions with all article entities (<span class="tag-cfg base">Unfiltered · 0.6166</span>) compared with
+      VG-Cap (<span class="tag-cfg ours">VG-Cap · 0.6219</span>). Both use the same retrieval, backbone and
+      104-word target. Hover an entity chip to find it in the captions.
+    </p>
+    <div id="example-browser" class="xb"></div>
+  </div>
+</section>
+
+<!-- ================================================================ RESULTS -->
+<section class="block alt" id="results">
+  <div class="wrap">
+    <h2 class="section-title">Results</h2>
+    <p class="section-lead">OpenEvents-V1 public test. Overall Score is the weighted harmonic mean of the retrieval and captioning metrics.</p>
+
+    <!-- (a) main comparison -->
+    <div class="card result-card">
+      <div class="result-head">
+        <div>
+          <h3 class="card-title">Comparison with state-of-the-art</h3>
+          <p class="takeaway" id="sota-takeaway"></p>
+        </div>
+        <div class="tabs-pill" id="sota-tabs">
+          <button data-m="overall" class="is-on">Overall</button>
+          <button data-m="cider">CIDEr</button>
+          <button data-m="clip">CLIPScore</button>
+          <button data-m="ap">AP</button>
+          <button data-m="r1">R@1</button>
+          <button data-m="r10">R@10</button>
+        </div>
+      </div>
+      <div class="chart-box tall"><canvas id="chart-sota" aria-label="Comparison with state-of-the-art methods"></canvas></div>
+      <details class="table-details">
+        <summary>Show full table</summary>
+        <div class="table-scroll" id="table-sota"></div>
+        <p class="tiny muted">* Overall Score computed from the official evaluation formula (not reported by the original authors).</p>
+      </details>
+    </div>
+
+    <!-- (b) retrieval saturated vs captioning -->
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="card-title">Retrieval is saturated</h3>
+        <p class="takeaway">Every method retrieves well (AP 0.970–0.995), so retrieval barely separates them.</p>
+        <div class="chart-box mid"><canvas id="chart-retrieval" aria-label="Retrieval metrics per method"></canvas></div>
+      </div>
+      <div class="card">
+        <h3 class="card-title">…captioning decides</h3>
+        <p class="takeaway">The ranking depends on balancing CIDEr and CLIPScore. Bubble size shows the Overall Score.</p>
+        <div class="chart-box mid"><canvas id="chart-tradeoff" aria-label="CIDEr versus CLIPScore per method"></canvas></div>
+      </div>
+    </div>
+
+    <!-- (c) ablation -->
+    <div class="card result-card">
+      <h3 class="card-title">Ablation: building up VG-Cap</h3>
+      <p class="takeaway">Every component adds to the Overall Score. The selector's gain comes with <b>no change in length</b>, so it reflects <b>what</b> is said, not how much.</p>
+      <div class="ablation-grid">
+        <div class="chart-box mid"><canvas id="chart-ablation" aria-label="Ablation waterfall"></canvas></div>
+        <ol class="abl-steps" id="abl-steps"></ol>
+      </div>
+      <details class="table-details">
+        <summary>Show full table</summary>
+        <div class="table-scroll" id="table-ablation"></div>
+      </details>
     </div>
   </div>
 </section>
 
+<!-- ================================================================ ANALYSIS -->
+<section class="block" id="analysis">
+  <div class="wrap">
+    <h2 class="section-title">Entity Selection Analysis</h2>
+    <p class="section-lead">
+      Unfiltered (0.6166) vs groundedness-filtered (0.6219) captions on the 3,000 public-test queries. Both use
+      identical retrieval, backbone, normalizer and 104-word target.
+    </p>
 
-<section class="hero is-light is-small">
-  <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-        <div class="item item-steve">
-          <video poster="" id="steve" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/steve.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-chair-tp">
-          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/chair-tp.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-shiba">
-          <video poster="" id="shiba" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/shiba.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-fullbody">
-          <video poster="" id="fullbody" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/fullbody.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-blueshirt">
-          <video poster="" id="blueshirt" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/blueshirt.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-mask">
-          <video poster="" id="mask" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/mask.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-coffee">
-          <video poster="" id="coffee" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/coffee.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-toby">
-          <video poster="" id="toby" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/toby2.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
+    <div class="stat-row">
+      <div class="stat-tile">
+        <div class="stat-label">Entities per caption</div>
+        <div class="stat-value">7.59 <span class="arrow">→</span> 6.76</div>
+        <div class="stat-delta neutral">−0.83 per caption</div>
+      </div>
+      <div class="stat-tile t-removed">
+        <div class="stat-label">Entity mentions removed</div>
+        <div class="stat-value">7,698</div>
+        <div class="stat-delta neutral">weakly grounded</div>
+      </div>
+      <div class="stat-tile t-introduced">
+        <div class="stat-label">Entity mentions introduced</div>
+        <div class="stat-value">5,215</div>
+        <div class="stat-delta neutral">grounded replacements</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Net change</div>
+        <div class="stat-value">−2,483</div>
+        <div class="stat-delta neutral">22,759 → 20,276 mentions</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Per-query effect</h3>
+      <p class="takeaway">The selector <b>reallocates</b> the caption budget rather than only deleting entities.</p>
+      <div class="split-bar" id="split-bar"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="card-title">Per-caption entity gap</h3>
+        <p class="takeaway">Centered at μ = −0.83 (σ = 2.44): most captions lose one or two entities.</p>
+        <div id="gap-hist"></div>
+      </div>
+      <div class="card">
+        <h3 class="card-title">What the scorer strips, by type</h3>
+        <p class="takeaway">DATE and ORG, which are rarely depictable, lead the removals. Many secondary PERSONs fall outside the top-10 cap.</p>
+        <div class="chart-box tall"><canvas id="chart-types" aria-label="Removed entities by type"></canvas></div>
       </div>
     </div>
   </div>
 </section>
 
-
-<section class="section">
-  <div class="container is-max-desktop">
-    <!-- Abstract. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            We present the first method capable of photorealistically reconstructing a non-rigidly
-            deforming scene using photos/videos captured casually from mobile phones.
-          </p>
-          <p>
-            Our approach augments neural radiance fields
-            (NeRF) by optimizing an
-            additional continuous volumetric deformation field that warps each observed point into a
-            canonical 5D NeRF.
-            We observe that these NeRF-like deformation fields are prone to local minima, and
-            propose a coarse-to-fine optimization method for coordinate-based models that allows for
-            more robust optimization.
-            By adapting principles from geometry processing and physical simulation to NeRF-like
-            models, we propose an elastic regularization of the deformation field that further
-            improves robustness.
-          </p>
-          <p>
-            We show that <span class="dnerf">Nerfies</span> can turn casually captured selfie
-            photos/videos into deformable NeRF
-            models that allow for photorealistic renderings of the subject from arbitrary
-            viewpoints, which we dub <i>"nerfies"</i>. We evaluate our method by collecting data
-            using a
-            rig with two mobile phones that take time-synchronized photos, yielding train/validation
-            images of the same pose at different viewpoints. We show that our method faithfully
-            reconstructs non-rigidly deforming scenes and reproduces unseen views with high
-            fidelity.
-          </p>
-        </div>
-      </div>
-    </div>
-    <!--/ Abstract. -->
-
-    <!-- Paper video. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Video</h2>
-        <div class="publication-video">
-          <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
-                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>
-      </div>
-    </div>
-    <!--/ Paper video. -->
-  </div>
-</section>
-
-
-<section class="section">
-  <div class="container is-max-desktop">
-
-    <div class="columns is-centered">
-
-      <!-- Visual Effects. -->
-      <div class="column">
-        <div class="content">
-          <h2 class="title is-3">Visual Effects</h2>
-          <p>
-            Using <i>nerfies</i> you can create fun visual effects. This Dolly zoom effect
-            would be impossible without nerfies since it would require going through a wall.
-          </p>
-          <video id="dollyzoom" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/dollyzoom-stacked.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-      </div>
-      <!--/ Visual Effects. -->
-
-      <!-- Matting. -->
-      <div class="column">
-        <h2 class="title is-3">Matting</h2>
-        <div class="columns is-centered">
-          <div class="column content">
-            <p>
-              As a byproduct of our method, we can also solve the matting problem by ignoring
-              samples that fall outside of a bounding box during rendering.
-            </p>
-            <video id="matting-video" controls playsinline height="100%">
-              <source src="./static/videos/matting.mp4"
-                      type="video/mp4">
-            </video>
-          </div>
-
-        </div>
-      </div>
-    </div>
-    <!--/ Matting. -->
-
-    <!-- Animation. -->
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Animation</h2>
-
-        <!-- Interpolating. -->
-        <h3 class="title is-4">Interpolating states</h3>
-        <div class="content has-text-justified">
-          <p>
-            We can also animate the scene by interpolating the deformation latent codes of two input
-            frames. Use the slider here to linearly interpolate between the left frame and the right
-            frame.
-          </p>
-        </div>
-        <div class="columns is-vcentered interpolation-panel">
-          <div class="column is-3 has-text-centered">
-            <img src="./static/images/interpolate_start.jpg"
-                 class="interpolation-image"
-                 alt="Interpolate start reference image."/>
-            <p>Start Frame</p>
-          </div>
-          <div class="column interpolation-video-column">
-            <div id="interpolation-image-wrapper">
-              Loading...
-            </div>
-            <input class="slider is-fullwidth is-large is-info"
-                   id="interpolation-slider"
-                   step="1" min="0" max="100" value="0" type="range">
-          </div>
-          <div class="column is-3 has-text-centered">
-            <img src="./static/images/interpolate_end.jpg"
-                 class="interpolation-image"
-                 alt="Interpolation end reference image."/>
-            <p class="is-bold">End Frame</p>
-          </div>
-        </div>
-        <br/>
-        <!--/ Interpolating. -->
-
-        <!-- Re-rendering. -->
-        <h3 class="title is-4">Re-rendering the input video</h3>
-        <div class="content has-text-justified">
-          <p>
-            Using <span class="dnerf">Nerfies</span>, you can re-render a video from a novel
-            viewpoint such as a stabilized camera by playing back the training deformations.
-          </p>
-        </div>
-        <div class="content has-text-centered">
-          <video id="replay-video"
-                 controls
-                 muted
-                 preload
-                 playsinline
-                 width="75%">
-            <source src="./static/videos/replay.mp4"
-                    type="video/mp4">
-          </video>
-        </div>
-        <!--/ Re-rendering. -->
-
-      </div>
-    </div>
-    <!--/ Animation. -->
-
-
-    <!-- Concurrent Work. -->
-    <div class="columns is-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Related Links</h2>
-
-        <div class="content has-text-justified">
-          <p>
-            There's a lot of excellent work that was introduced around the same time as ours.
-          </p>
-          <p>
-            <a href="https://arxiv.org/abs/2104.09125">Progressive Encoding for Neural Optimization</a> introduces an idea similar to our windowed position encoding for coarse-to-fine optimization.
-          </p>
-          <p>
-            <a href="https://www.albertpumarola.com/research/D-NeRF/index.html">D-NeRF</a> and <a href="https://gvv.mpi-inf.mpg.de/projects/nonrigid_nerf/">NR-NeRF</a>
-            both use deformation fields to model non-rigid scenes.
-          </p>
-          <p>
-            Some works model videos with a NeRF by directly modulating the density, such as <a href="https://video-nerf.github.io/">Video-NeRF</a>, <a href="https://www.cs.cornell.edu/~zl548/NSFF/">NSFF</a>, and <a href="https://neural-3d-video.github.io/">DyNeRF</a>
-          </p>
-          <p>
-            There are probably many more by the time you are reading this. Check out <a href="https://dellaert.github.io/NeRF/">Frank Dellart's survey on recent NeRF papers</a>, and <a href="https://github.com/yenchenlin/awesome-NeRF">Yen-Chen Lin's curated list of NeRF papers</a>.
-          </p>
-        </div>
-      </div>
-    </div>
-    <!--/ Concurrent Work. -->
-
-  </div>
-</section>
-
-
-<section class="section" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-    <pre><code>@article{park2021nerfies,
-  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
-  title     = {Nerfies: Deformable Neural Radiance Fields},
-  journal   = {ICCV},
-  year      = {2021},
+<!-- ================================================================ BIBTEX -->
+<section class="block" id="bibtex">
+  <div class="wrap narrow">
+    <h2 class="section-title">BibTeX</h2>
+    <div class="bibtex-box">
+      <button class="copy-btn" id="copy-bib"><i class="far fa-copy"></i> <span>Copy</span></button>
+<pre><code id="bibtex-code">@inproceedings{phan2027vgcap,
+  title     = {Grounding What Matters: Selective Entity Conditioning
+               for Event-Enriched News Image Captioning},
+  author    = {Phan, Van-Phuc and Pham, Minh-Tan and Tran, Mai-Khiem and Do, Trong-Le and
+               Nguyen, Hai-Dang and Nguyen, Tam V. and Tran, Minh-Triet and Le, Trung-Nghia},
+  booktitle = {International Conference on Multimedia Modeling (MMM)},
+  year      = {2027}
 }</code></pre>
+    </div>
   </div>
 </section>
 
-
-<footer class="footer">
-  <div class="container">
-    <div class="content has-text-centered">
-      <a class="icon-link"
-         href="./static/videos/nerfies_paper.pdf">
-        <i class="fas fa-file-pdf"></i>
-      </a>
-      <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled>
-        <i class="fab fa-github"></i>
-      </a>
-    </div>
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            This website is licensed under a <a rel="license"
-                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
-          <p>
-            This means you are free to borrow the <a
-              href="https://github.com/nerfies/nerfies.github.io">source code</a> of this website,
-            we just ask that you link back to this page in the footer.
-            Please remember to remove the analytics code included in the header of the website which
-            you do not want on your website.
-          </p>
-        </div>
-      </div>
-    </div>
+<!-- ================================================================ FOOTER -->
+<footer class="site-footer">
+  <div class="wrap narrow">
+    <p class="ack">
+      <b>Acknowledgement.</b> This research is funded by Vietnam National University – Ho Chi Minh City (VNU-HCM)
+      under Grant Number C2026-18-12. Trung-Nghia Le was funded by the Postdoctoral Scholarship Programme of
+      Vingroup Innovation Foundation (VINIF), VinUniversity, code VINIF.2025.STS.14.
+    </p>
+    <p class="credit">
+      Website adapted from the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> template,
+      licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.
+    </p>
   </div>
 </footer>
 
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Close"><i class="fas fa-times"></i></button>
+  <img alt="">
+</div>
+
+<!-- Libraries -->
+<script defer src="./static/js/fontawesome.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<!-- Content (edit these) -->
+<script src="./static/data/config.js"></script>
+<script src="./static/data/results.js"></script>
+<script src="./static/data/examples.js"></script>
+<script src="./static/data/analysis.js"></script>
+
+<!-- Page components -->
+<script src="./static/js/components/util.js"></script>
+<script src="./static/js/components/charts.js"></script>
+<script src="./static/js/components/examples.js"></script>
+<script src="./static/js/index.js"></script>
 </body>
 </html>
