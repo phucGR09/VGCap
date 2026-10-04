@@ -144,7 +144,7 @@ a:hover { color: #1d4fb0; }
   letter-spacing: .06em; background: #fff; color: var(--muted); padding: 1px 7px; border-radius: 999px;
 }
 .logo-strip { display: flex; justify-content: center; align-items: center; gap: 28px; flex-wrap: wrap; }
-.logo-img { height: 56px; width: auto; max-width: 190px; object-fit: contain; }
+.logo-img { height: 92px; width: auto; max-width: 280px; object-fit: contain; }
 
 /* ---------------------------------------------------------- placeholders */
 .ph {

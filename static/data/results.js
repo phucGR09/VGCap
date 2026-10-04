@@ -26,21 +26,5 @@ window.VGCAP.results = {
       note: "All article entities injected, plus the 100–120 word prompt band." },
     { config: "+ heuristic selector (ours)", short: "+ Selector (ours)", overall: 0.6219, cider: 0.265, clip: 0.858, length: 104, ours: true,
       note: "Only grounded entities (S(e) ≥ 3, top-10) reach the prompt and the enrichment step." }
-  ],
-
-  /* Sec. 4.4 — entity selection analysis (3,000 public-test queries). */
-  entityStats: {
-    meanBefore: 7.59, meanAfter: 6.76,
-    mentionsBefore: 22759, mentionsAfter: 20276,
-    removed: 7698, introduced: 5215, net: -2483,
-    fewer: 54.5, same: 17.3, more: 28.2,
-    fewerN: 1634, sameN: 519, moreN: 847,
-    gapMean: -0.83, gapStd: 2.44, queries: 3000
-  },
-
-  /* Fig. 3 — removed entities by spaCy type (from entity_gap_by_type.pdf). */
-  removedByType: [
-    ["DATE", 1957], ["ORG", 1464], ["PERSON", 1433], ["GPE", 857], ["NORP", 621], ["EVENT", 491],
-    ["FAC", 333], ["LAW", 155], ["LOC", 131], ["WORK_OF_ART", 117], ["PRODUCT", 111], ["LANGUAGE", 28]
   ]
 };
