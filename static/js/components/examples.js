@@ -27,20 +27,11 @@
     const all = (V.examples || []).filter(x => !x.placeholder || showPh());
     if (!all.length) { root.appendChild(placeholder('Add examples', 'static/data/examples.js')); return; }
 
-    const st = { filter: 'All', idx: 0, tab: 'vgcap', mode: 'single', hl: true };
-    const cats = ['All'].concat(Array.from(new Set(all.filter(x => !x.placeholder && x.category).map(x => x.category))));
-    const visible = () => all.filter(x => st.filter === 'All' || x.category === st.filter);
+    const st = { idx: 0, tab: 'vgcap', mode: 'compare', hl: true };
+    const visible = () => all;
 
-    // --- bar: filters + nav
-    const filters = el('div', { class: 'xb-filters' });
-    cats.forEach(c => filters.appendChild(el('button', { text: c, class: c === st.filter ? 'is-on' : '', onclick: () => { st.filter = c; st.idx = 0; renderAll(); } })));
     const counter = el('span');
-    const nav = el('div', { class: 'xb-nav' }, [
-      el('button', { 'aria-label': 'Previous example', html: '<i class="fas fa-chevron-left"></i>', onclick: () => go(-1) }),
-      counter,
-      el('button', { 'aria-label': 'Next example', html: '<i class="fas fa-chevron-right"></i>', onclick: () => go(1) })
-    ]);
-    root.appendChild(el('div', { class: 'xb-bar' }, [filters, nav]));
+    root.appendChild(el('div', { class: 'xb-bar' }, [counter]));
     const strip = el('div', { class: 'xb-strip', role: 'tablist' });
     root.appendChild(strip);
     const view = el('div');
@@ -57,7 +48,6 @@
     });
 
     function renderAll() {
-      filters.querySelectorAll('button').forEach(b => b.classList.toggle('is-on', b.textContent === st.filter));
       const list = visible();
       counter.textContent = (st.idx + 1) + ' / ' + list.length;
       strip.innerHTML = '';
@@ -69,7 +59,6 @@
           const nRemoved = (x.entities || []).filter(e => e.status === 'removed').length;
           t = el('button', { class: 'xb-thumb' + (i === st.idx ? ' is-on' : ''), title: (x.article && x.article.title) || x.id }, [
             x.image ? el('img', { src: x.image, alt: '', loading: 'lazy' }) : null,
-            x.category ? el('span', { class: 'cat', text: x.category }) : null,
             nRemoved ? el('span', { class: 'badge', text: '−' + nRemoved }) : null
           ]);
         }
@@ -99,7 +88,6 @@
       opts = opts || {};
       const text = capText(x, key);
       const card = el('div', { class: 'cap-card' + (key === 'vgcap' ? ' ours' : '') });
-      const cfg = key === 'vgcap' ? 'VG-Cap · 0.6219' : key === 'baseline' ? 'All entities · 0.6166' : 'Ground truth';
       if (!text) {
         card.appendChild(el('div', { class: 'cap-head' }, el('span', { class: 'who', text: CAP_LABEL[key] })));
         card.appendChild(placeholder(CAP_LABEL[key] + ' caption', 'examples.js → ' + x.id + '.captions.' + key + '.text', { icon: 'fa-align-left' }));
@@ -108,8 +96,7 @@
       const h = highlight(text, x.entities);
       const words = x.captions[key].words || wordCount(text);
       card.appendChild(el('div', { class: 'cap-head' }, [
-        el('span', { class: 'who', text: CAP_LABEL[key] }),
-        el('span', { class: 'tag-cfg ' + (key === 'vgcap' ? 'ours' : 'base'), text: cfg })
+        el('span', { class: 'who', text: CAP_LABEL[key] })
       ]));
       const body = el('div', { class: 'cap-text' + (opts.open ? ' is-open' : ''), html: h.html });
       card.appendChild(body);
@@ -122,12 +109,6 @@
         card.appendChild(more);
         requestAnimationFrame(() => { if (body.scrollHeight <= body.clientHeight + 2) more.remove(); });
       }
-      const c = x.captions[key];
-      card.appendChild(el('div', { class: 'cap-foot', html:
-        '<span>words <b>' + words + (x.excerpt ? ' (excerpt)' : '') + '</b></span>' +
-        '<span>entity mentions <b>' + h.count + '</b></span>' +
-        (c.cider != null ? '<span>CIDEr <b>' + (+c.cider).toFixed(3) + '</b></span>' : '') +
-        (c.clip != null ? '<span>CLIP <b>' + (+c.clip).toFixed(3) + '</b></span>' : '') }));
       return card;
     }
 
@@ -143,7 +124,6 @@
         x.image ? el('img', { src: x.image, class: 'zoomable', alt: (x.article && x.article.title) || 'Example image ' + x.id })
                 : placeholder('Example image', 'static/images/examples/' + x.id + '.jpg', { icon: 'fa-image' }),
         el('div', { class: 'xb-meta' }, [
-          x.category ? el('span', { class: 'cat', text: x.category }) : null,
           el('span', { text: '#' + x.id }),
           x.excerpt ? el('span', { class: 'xb-excerpt', text: 'Caption excerpts from paper figure', title: 'Replace with the full captions in examples.js' }) : null
         ])
@@ -175,10 +155,8 @@
       }
 
       // controls
-      const hasRef = !!capText(x, 'reference');
       const capTabs = el('div', { class: 'tabs-pill', role: 'tablist' });
-      ['vgcap', 'baseline', 'reference'].forEach(k => {
-        if (k === 'reference' && !hasRef && !showPh()) return;
+      ['vgcap', 'baseline'].forEach(k => {
         capTabs.appendChild(el('button', { text: CAP_LABEL[k], class: st.tab === k ? 'is-on' : '', onclick: () => { st.tab = k; renderView(x); } }));
       });
       const modeTabs = el('div', { class: 'tabs-pill' }, [
