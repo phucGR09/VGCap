@@ -54,7 +54,7 @@
       <span class="author">Mai-Khiem Tran<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0001-5460-0229" aria-label="ORCID of Mai-Khiem Tran"><i class="ai ai-orcid"></i></a></span>
       <span class="author">Trong-Le Do<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0002-2906-0360" aria-label="ORCID of Trong-Le Do"><i class="ai ai-orcid"></i></a></span>
       <span class="author">Hai-Dang Nguyen<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0003-0888-8908" aria-label="ORCID of Hai-Dang Nguyen"><i class="ai ai-orcid"></i></a></span>
-      <span class="author">Tam V. Nguyen<sup>3</sup><a class="orcid" href="https://orcid.org/0000-0003-0236-7992" aria-label="ORCID of Tam V. Nguyen"><i class="ai ai-orcid"></i></a></span>
+      <span class="author">Tam V. Nguyen<a class="orcid" href="https://orcid.org/0000-0003-0236-7992" aria-label="ORCID of Tam V. Nguyen"><i class="ai ai-orcid"></i></a></span>
       <span class="author">Minh-Triet Tran<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0003-3046-3041" aria-label="ORCID of Minh-Triet Tran"><i class="ai ai-orcid"></i></a></span>
       <span class="author">Trung-Nghia Le<sup>1,2✉</sup><a class="orcid" href="https://orcid.org/0000-0002-7363-2610" aria-label="ORCID of Trung-Nghia Le"><i class="ai ai-orcid"></i></a></span>
     </div>
@@ -62,7 +62,6 @@
     <div class="affiliations">
       <span><sup>1</sup>University of Science, Ho Chi Minh City, Vietnam</span>
       <span><sup>2</sup>Vietnam National University, Ho Chi Minh City, Vietnam</span>
-      <span><sup>3</sup>University of Dayton, Ohio, United States</span>
     </div>
     <div class="author-notes">
       <span>★ Equal contribution</span>
@@ -82,7 +81,6 @@
     <div class="logo-strip" data-placeholder-block>
       <div class="ph ph-logo">HCMUS logo<small>static/images/logos/hcmus.png</small></div>
       <div class="ph ph-logo">VNU-HCM logo<small>static/images/logos/vnuhcm.png</small></div>
-      <div class="ph ph-logo">U. Dayton logo<small>static/images/logos/udayton.png</small></div>
     </div>
   </div>
 </header>
@@ -263,54 +261,17 @@
 
     <!-- (a) main comparison -->
     <div class="card result-card">
-      <div class="result-head">
-        <div>
-          <h3 class="card-title">Comparison with state-of-the-art</h3>
-          <p class="takeaway" id="sota-takeaway"></p>
-        </div>
-        <div class="tabs-pill" id="sota-tabs">
-          <button data-m="overall" class="is-on">Overall</button>
-          <button data-m="cider">CIDEr</button>
-          <button data-m="clip">CLIPScore</button>
-          <button data-m="ap">AP</button>
-          <button data-m="r1">R@1</button>
-          <button data-m="r10">R@10</button>
-        </div>
-      </div>
-      <div class="chart-box tall"><canvas id="chart-sota" aria-label="Comparison with state-of-the-art methods"></canvas></div>
-      <details class="table-details">
-        <summary>Show full table</summary>
-        <div class="table-scroll" id="table-sota"></div>
-        <p class="tiny muted">* Overall Score computed from the official evaluation formula (not reported by the original authors).</p>
-      </details>
-    </div>
-
-    <!-- (b) retrieval saturated vs captioning -->
-    <div class="grid-2">
-      <div class="card">
-        <h3 class="card-title">Retrieval is saturated</h3>
-        <p class="takeaway">Every method retrieves well (AP 0.970–0.995), so retrieval barely separates them.</p>
-        <div class="chart-box mid"><canvas id="chart-retrieval" aria-label="Retrieval metrics per method"></canvas></div>
-      </div>
-      <div class="card">
-        <h3 class="card-title">…captioning decides</h3>
-        <p class="takeaway">The ranking depends on balancing CIDEr and CLIPScore. Bubble size shows the Overall Score.</p>
-        <div class="chart-box mid"><canvas id="chart-tradeoff" aria-label="CIDEr versus CLIPScore per method"></canvas></div>
-      </div>
+      <h3 class="card-title">Comparison with state-of-the-art</h3>
+      <p class="takeaway"><b>VG-Cap: 0.6219</b> (rank 1 of 7, +0.0122 vs ENRIC). Best Overall Score, with the gain coming entirely from the captioning stage.</p>
+      <div class="table-scroll" id="table-sota"></div>
+      <p class="tiny muted">* Overall Score computed from the official evaluation formula (not reported by the original authors).</p>
     </div>
 
     <!-- (c) ablation -->
     <div class="card result-card">
       <h3 class="card-title">Ablation: building up VG-Cap</h3>
       <p class="takeaway">Every component adds to the Overall Score. The selector's gain comes with <b>no change in length</b>, so it reflects <b>what</b> is said, not how much.</p>
-      <div class="ablation-grid">
-        <div class="chart-box mid"><canvas id="chart-ablation" aria-label="Ablation waterfall"></canvas></div>
-        <ol class="abl-steps" id="abl-steps"></ol>
-      </div>
-      <details class="table-details">
-        <summary>Show full table</summary>
-        <div class="table-scroll" id="table-ablation"></div>
-      </details>
+      <div class="table-scroll" id="table-ablation"></div>
     </div>
   </div>
 </section>
