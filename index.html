@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VGCap: Grounding What Matters</title>
   <meta name="description"
-        content="VG-Cap selectively conditions news image captioning on visually grounded article entities, with an Entity Heuristic Scorer and Two-Stage Length Control. MMM 2027.">
+    content="VG-Cap selectively conditions news image captioning on visually grounded article entities, with an Entity Heuristic Scorer and Two-Stage Length Control. MMM 2027.">
   <meta name="keywords"
-        content="VG-Cap, visual grounding, selective entity conditioning, entity selection, retrieval-augmented generation, event-enriched captioning, news image captioning, OpenEvents">
+    content="VG-Cap, visual grounding, selective entity conditioning, entity selection, retrieval-augmented generation, event-enriched captioning, news image captioning, OpenEvents">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
 
   <link rel="stylesheet" href="./static/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
@@ -20,304 +22,341 @@
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="icon" href="./static/images/favicon.svg">
 </head>
+
 <body>
 
-<!-- ================================================================ NAV -->
-<nav class="topnav" id="topnav" aria-label="Sections">
-  <div class="topnav-inner">
-    <a class="topnav-brand" href="#top">VG-Cap</a>
-    <button class="topnav-burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="topnav-links" id="nav-links">
-      <a href="#method">Method</a>
-      <a href="#examples">Examples</a>
-      <a href="#results">Results</a>
-      <a href="#bibtex">BibTeX</a>
+  <!-- ================================================================ NAV -->
+  <nav class="topnav" id="topnav" aria-label="Sections">
+    <div class="topnav-inner">
+      <a class="topnav-brand" href="#top">VG-Cap</a>
+      <button class="topnav-burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="topnav-links" id="nav-links">
+        <a href="#method">Method</a>
+        <a href="#examples">Examples</a>
+        <a href="#results">Results</a>
+        <a href="#bibtex">BibTeX</a>
+      </div>
     </div>
-  </div>
-  <div class="scroll-progress" id="scroll-progress"></div>
-</nav>
+    <div class="scroll-progress" id="scroll-progress"></div>
+  </nav>
 
-<!-- ================================================================ HERO -->
-<header class="hero-block" id="top">
-  <div class="wrap narrow has-text-centered">
-    <h1 class="paper-title">
-      Grounding What Matters: Selective Entity Conditioning for Event-Enriched News Image Captioning
-    </h1>
+  <!-- ================================================================ HERO -->
+  <header class="hero-block" id="top">
+    <div class="wrap narrow has-text-centered">
+      <h1 class="paper-title">
+        Grounding What Matters: Selective Entity Conditioning for Event-Enriched News Image Captioning
+      </h1>
 
-    <div class="authors">
-      <span class="author">Van-Phuc Phan<sup>1,2★</sup><a class="orcid" href="https://orcid.org/0009-0007-4407-4246" aria-label="ORCID of Van-Phuc Phan"><i class="ai ai-orcid"></i></a></span>
-      <span class="author">Minh-Tan Pham<sup>1,2★</sup><a class="orcid" href="https://orcid.org/0009-0009-0549-4699" aria-label="ORCID of Minh-Tan Pham"><i class="ai ai-orcid"></i></a></span>
-      <span class="author">Mai-Khiem Tran<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0001-5460-0229" aria-label="ORCID of Mai-Khiem Tran"><i class="ai ai-orcid"></i></a></span>
-      <span class="author">Trong-Le Do<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0002-2906-0360" aria-label="ORCID of Trong-Le Do"><i class="ai ai-orcid"></i></a></span>
-      <span class="author">Hai-Dang Nguyen<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0003-0888-8908" aria-label="ORCID of Hai-Dang Nguyen"><i class="ai ai-orcid"></i></a></span>
-      <span class="author">Tam V. Nguyen<sup>3</sup><a class="orcid" href="https://orcid.org/0000-0003-0236-7992" aria-label="ORCID of Tam V. Nguyen"><i class="ai ai-orcid"></i></a></span>
-      <span class="author">Minh-Triet Tran<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0003-3046-3041" aria-label="ORCID of Minh-Triet Tran"><i class="ai ai-orcid"></i></a></span>
-      <span class="author">Trung-Nghia Le<sup>1,2✉</sup><a class="orcid" href="https://orcid.org/0000-0002-7363-2610" aria-label="ORCID of Trung-Nghia Le"><i class="ai ai-orcid"></i></a></span>
-    </div>
+      <div class="authors">
+        <span class="author">Van-Phuc Phan<sup>1,2★</sup><a class="orcid" href="https://orcid.org/0009-0007-4407-4246"
+            aria-label="ORCID of Van-Phuc Phan"><i class="ai ai-orcid"></i></a></span>
+        <span class="author">Minh-Tan Pham<sup>1,2★</sup><a class="orcid" href="https://orcid.org/0009-0009-0549-4699"
+            aria-label="ORCID of Minh-Tan Pham"><i class="ai ai-orcid"></i></a></span>
+        <span class="author">Mai-Khiem Tran<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0001-5460-0229"
+            aria-label="ORCID of Mai-Khiem Tran"><i class="ai ai-orcid"></i></a></span>
+        <span class="author">Trong-Le Do<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0002-2906-0360"
+            aria-label="ORCID of Trong-Le Do"><i class="ai ai-orcid"></i></a></span>
+        <span class="author">Hai-Dang Nguyen<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0003-0888-8908"
+            aria-label="ORCID of Hai-Dang Nguyen"><i class="ai ai-orcid"></i></a></span>
+        <span class="author">Tam V. Nguyen<sup>3</sup><a class="orcid" href="https://orcid.org/0000-0003-0236-7992"
+            aria-label="ORCID of Tam V. Nguyen"><i class="ai ai-orcid"></i></a></span>
+        <span class="author">Minh-Triet Tran<sup>1,2</sup><a class="orcid" href="https://orcid.org/0000-0003-3046-3041"
+            aria-label="ORCID of Minh-Triet Tran"><i class="ai ai-orcid"></i></a></span>
+        <span class="author">Trung-Nghia Le<sup>1,2✉</sup><a class="orcid" href="https://orcid.org/0000-0002-7363-2610"
+            aria-label="ORCID of Trung-Nghia Le"><i class="ai ai-orcid"></i></a></span>
+      </div>
 
-    <div class="affiliations">
-      <span><sup>1</sup>University of Science, Ho Chi Minh City, Vietnam</span>
-      <span><sup>2</sup>Vietnam National University, Ho Chi Minh City, Vietnam</span>
-      <span><sup>3</sup>University of Dayton, Ohio, USA</span>
-    </div>
-    <div class="author-notes">
-      <span>★ Equal contribution</span>
-      <span>✉ Corresponding author: ltnghia@fit.hcmus.edu.vn</span>
-    </div>
+      <div class="affiliations">
+        <span><sup>1</sup>University of Science, Ho Chi Minh City, Vietnam</span>
+        <span><sup>2</sup>Vietnam National University, Ho Chi Minh City, Vietnam</span>
+        <span><sup>3</sup>University of Dayton, Ohio, USA</span>
+      </div>
+      <div class="author-notes">
+        <span>★ Equal contribution</span>
+        <span>✉ Corresponding author: ltnghia@fit.hcmus.edu.vn</span>
+      </div>
 
-    <!-- Link buttons. They have no href yet: add  href="..."  to activate one
+      <!-- Link buttons. They have no href yet: add  href="..."  to activate one
          (the "soon" badge disappears automatically). -->
-    <div class="link-row">
-      <a class="link-btn" data-link="paper"><i class="fas fa-file-pdf"></i><span>Paper</span><em class="soon">soon</em></a>
-      <a class="link-btn" data-link="arxiv"><i class="ai ai-arxiv"></i><span>arXiv</span><em class="soon">soon</em></a>
-      <a class="link-btn" data-link="code"><i class="fab fa-github"></i><span>Code</span><em class="soon">soon</em></a>
-      <a class="link-btn" href="#bibtex"><i class="fas fa-quote-right"></i><span>BibTeX</span></a>
-    </div>
-  </div>
-</header>
-
-<!-- ================================================================ TL;DR + TEASER -->
-<section class="block" id="tldr">
-  <div class="wrap">
-    <p class="tldr">
-      <span class="tldr-tag">TL;DR</span>
-      News articles name far more people, places and events than a photo shows.
-      <b>VG-Cap</b> scores every article entity for <b>visual groundedness</b> and lets only the grounded ones
-      into the caption, both in the prompt and in post-generation enrichment. <b>Two-Stage Length Control</b>
-      keeps captions near the 104-word target.
-    </p>
-
-    <div class="stat-row">
-      <div class="stat-tile">
-        <div class="stat-label">Overall Score</div>
-        <div class="stat-value">0.6219</div>
-        <div class="stat-delta up">+0.0122 vs ENRIC</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">CIDEr</div>
-        <div class="stat-value">0.265</div>
-        <div class="stat-delta up">+0.008 vs ENRIC</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">CLIPScore</div>
-        <div class="stat-value">0.858</div>
-        <div class="stat-delta up">+0.025 vs ENRIC</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">Entities per caption</div>
-        <div class="stat-value">7.59 <span class="arrow">→</span> 6.76</div>
-        <div class="stat-delta neutral">same 104-word length</div>
+      <div class="link-row">
+        <a class="link-btn" data-link="arxiv"><i class="ai ai-arxiv"></i><span>arXiv</span><em
+            class="soon">soon</em></a>
+        <a class="link-btn" data-link="code"><i class="fab fa-github"></i><span>Code</span><em
+            class="soon">soon</em></a>
+        <a class="link-btn" href="#bibtex"><i class="fas fa-quote-right"></i><span>BibTeX</span></a>
       </div>
     </div>
-    <p class="stat-foot">OpenEvents-V1 public test · same retrieval backbone as ENRIC</p>
-  </div>
-</section>
+  </header>
 
-<!-- ================================================================ ABSTRACT -->
-<section class="block alt" id="abstract">
-  <div class="wrap narrow">
-    <h2 class="section-title">Abstract</h2>
-    <p class="abstract">
-      News image captioning requires models to connect visual evidence with external article context to identify
-      depicted people, locations, events, and their broader significance. Existing retrieval-augmented methods
-      typically inject all named entities extracted from the retrieved article into the captioning pipeline.
-      However, news articles often mention secondary actors and background events that are not depicted, leading
-      to unsupported descriptions and inefficient use of the caption budget. We introduce VG-Cap, a
-      retrieval-augmented news captioning framework that selectively incorporates entities according to their
-      estimated visual groundedness. Our Entity Heuristic Scorer ranks candidate entities using their presence
-      across visual and textual context, position within the article, and semantic type. A unified gating
-      mechanism applies the same entity selection to both prompt-time entity conditioning and post-generation
-      enrichment, preventing rejected entities from being introduced through these explicit entity pathways. We
-      further introduce Two-Stage Length Control mechanism that combines bounded generation with
-      entity-preserving semantic normalization. Experiments on the OpenEvents-V1 dataset demonstrate that VG-Cap
-      consistently outperforms the strongest baselines. The results further show that selective entity grounding
-      improves the relevance and semantic alignment of generated news captions by reducing unnecessary contextual
-      entities.
-    </p>
-  </div>
-</section>
+  <!-- ================================================================ TL;DR + TEASER -->
+  <section class="block" id="tldr">
+    <div class="wrap">
+      <p class="tldr">
+        <span class="tldr-tag">TL;DR</span>
+        News articles mention many entities, but only some are visible in the image. <b>VG-Cap</b> selectively
+        identifies and
+        conditions on visually grounded entities, keeping irrelevant context out of the caption. It achieves
+        state-of-the-art performance on the OpenEvents-V1 dataset.
+      </p>
 
-<!-- ================================================================ CONTRIBUTIONS -->
-<section class="block" id="contributions">
-  <div class="wrap">
-    <h2 class="section-title">Contributions</h2>
-    <div class="grid-3">
-      <div class="contrib">
-        <div class="contrib-icon c-retrieval-bg"><i class="fas fa-layer-group"></i></div>
-        <h4>VG-Cap framework</h4>
-        <p>A retrieval-augmented framework for event-enriched captioning that makes the use of external knowledge <b>selective</b> and visually grounded.</p>
+      <div class="stat-row">
+        <div class="stat-tile">
+          <div class="stat-label">Overall Score</div>
+          <div class="stat-value">0.6219</div>
+          <div class="stat-delta up">+0.0122 vs ENRIC</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">CIDEr</div>
+          <div class="stat-value">0.265</div>
+          <div class="stat-delta up">+0.008 vs ENRIC</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">CLIPScore</div>
+          <div class="stat-value">0.858</div>
+          <div class="stat-delta up">+0.025 vs ENRIC</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">Entities per caption</div>
+          <div class="stat-value">7.59 <span class="arrow">→</span> 6.76</div>
+          <div class="stat-delta neutral">same 104-word length</div>
+        </div>
       </div>
-      <div class="contrib">
-        <div class="contrib-icon c-scorer-bg"><i class="fas fa-sliders-h"></i></div>
-        <h4>Entity Heuristic Scorer</h4>
-        <p>Scores article entities by contextual presence, document position and semantic type. One selection gates <b>both</b> prompt injection and post-generation enrichment.</p>
-      </div>
-      <div class="contrib">
-        <div class="contrib-icon c-length-bg"><i class="fas fa-ruler-horizontal"></i></div>
-        <h4>Two-Stage Length Control</h4>
-        <p>Bounded generation followed by entity-preserving semantic normalization reduces the length mismatch without dropping key event information.</p>
-      </div>
+      <p class="stat-foot">OpenEvents-V1 public test · same retrieval backbone as ENRIC</p>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ================================================================ METHOD -->
-<section class="block alt" id="method">
-  <div class="wrap">
-    <h2 class="section-title">Method</h2>
-    <p class="section-lead">
-      Two stages: <b class="c-retrieval">article retrieval</b> (fixed, from ENRIC), then
-      <b class="c-context">context-grounded caption generation</b>. Click a step to see it in the figure.
-    </p>
-
-    <div class="stepper" id="stepper" role="tablist">
-      <button class="step is-active" data-step="0" role="tab"><span class="step-n c-retrieval-bg">1</span>Retrieval</button>
-      <button class="step" data-step="1" role="tab"><span class="step-n c-context-bg">2</span>Context</button>
-      <button class="step" data-step="2" role="tab"><span class="step-n c-scorer-bg">3</span>Entity Scorer</button>
-      <button class="step" data-step="3" role="tab"><span class="step-n c-length-bg">4</span>Length Control</button>
-      <button class="step" data-step="4" role="tab"><span class="step-n c-gen-bg">5</span>Unified Conditioning</button>
+  <!-- ================================================================ ABSTRACT -->
+  <section class="block alt" id="abstract">
+    <div class="wrap narrow">
+      <h2 class="section-title">Abstract</h2>
+      <p class="abstract">
+        News image captioning requires models to connect visual evidence with external article context to identify
+        depicted people, locations, events, and their broader significance. Existing retrieval-augmented methods
+        typically inject all named entities extracted from the retrieved article into the captioning pipeline.
+        However, news articles often mention secondary actors and background events that are not depicted, leading
+        to unsupported descriptions and inefficient use of the caption budget. We introduce VG-Cap, a
+        retrieval-augmented news captioning framework that selectively incorporates entities according to their
+        estimated visual groundedness. Our Entity Heuristic Scorer ranks candidate entities using their presence
+        across visual and textual context, position within the article, and semantic type. A unified gating
+        mechanism applies the same entity selection to both prompt-time entity conditioning and post-generation
+        enrichment, preventing rejected entities from being introduced through these explicit entity pathways. We
+        further introduce Two-Stage Length Control mechanism that combines bounded generation with
+        entity-preserving semantic normalization. Experiments on the OpenEvents-V1 dataset demonstrate that VG-Cap
+        consistently outperforms the strongest baselines. The results further show that selective entity grounding
+        improves the relevance and semantic alignment of generated news captions by reducing unnecessary contextual
+        entities.
+      </p>
     </div>
+  </section>
 
-    <div class="method-grid">
-      <figure class="overview-fig" id="overview-fig">
-        <img src="./static/images/figures/overview.png" class="zoomable"
-             alt="Overview of VG-Cap: article retrieval and re-ranking, then context construction, entity heuristic scorer, caption generation and two-stage length control.">
-        <div class="fig-highlight" id="fig-highlight"></div>
-        <button class="fig-all" id="fig-all" title="Show the whole figure"><i class="fas fa-expand"></i></button>
-      </figure>
-
-      <div class="step-panels">
-        <div class="step-panel is-active" data-step="0">
-          <h3 class="c-retrieval">1 · Article Retrieval &amp; Re-ranking</h3>
-          <p>VG-Cap reuses ENRIC's retrieval backbone, unchanged. InternVL-14B encodes the query image and the corpus (&gt;400K images), and the top-<i>K</i> (<i>K</i> = 15) candidates are kept by cosine similarity.</p>
-          <p>An <b>uncertainty detector</b> checks three signals: the entropy of the top-<i>K</i> distribution, the gap between the top-1 and top-2 scores, and the top-1 similarity. For uncertain queries only, caption-based text similarity is blended in:</p>
-          <div class="eq">\[ s_{\mathrm{rerank}}(q,x_i) = \lambda\, s_{\mathrm{img}}(q,x_i) + (1-\lambda)\, s_{\mathrm{text}}(q,x_i) \]</div>
-          <p class="tiny muted">The highest-scoring candidate gives the retrieved article. Retrieval is identical to ENRIC in every experiment.</p>
+  <!-- ================================================================ CONTRIBUTIONS -->
+  <section class="block" id="contributions">
+    <div class="wrap">
+      <h2 class="section-title">Contributions</h2>
+      <div class="grid-3">
+        <div class="contrib">
+          <div class="contrib-icon c-retrieval-bg"><i class="fas fa-layer-group"></i></div>
+          <h4>VG-Cap framework</h4>
+          <p>A retrieval-augmented framework for event-enriched captioning that makes the use of external knowledge
+            <b>selective</b> and visually grounded.
+          </p>
         </div>
-        <div class="step-panel" data-step="1">
-          <h3 class="c-context">2 · Context Construction</h3>
-          <p>The article covers much more than the depicted scene, so VG-Cap organizes the available information into three groups:</p>
-          <div class="eq">\[ \mathcal{C} = \{\, \mathcal{C}_{\mathrm{article}},\ \mathcal{C}_{\mathrm{image}},\ \mathcal{C}_{\mathrm{entity}} \,\} \]</div>
-          <ul class="ticks">
-            <li><b>Article context</b>: a summary plus question–answer pairs (who, where, when, why, how).</li>
-            <li><b>Image context</b>: a VLM-generated description of the query image plus the editorial caption of the retrieved image.</li>
-            <li><b>Entity context</b>: named entities from the article. This is the only group <b>filtered by the scorer</b>.</li>
-          </ul>
+        <div class="contrib">
+          <div class="contrib-icon c-scorer-bg"><i class="fas fa-sliders-h"></i></div>
+          <h4>Entity Heuristic Scorer</h4>
+          <p>Scores article entities by contextual presence, document position and semantic type. One selection gates
+            <b>both</b> prompt injection and post-generation enrichment.
+          </p>
         </div>
-        <div class="step-panel" data-step="2">
-          <h3 class="c-scorer">3 · Entity Heuristic Scorer</h3>
-          <p>Candidates come from NER over the article plus LLM keyword lists, merged by substring-aware deduplication. Each candidate gets a groundedness score:</p>
-          <div class="eq">\[ S(e) = \max\!\Big(0,\ \sum_{f\in\mathcal{F}} w_f\,\phi_f(e)\Big) \]</div>
-          <div class="eq">\[ \mathcal{E}^{*} = \operatorname{TopK}_{K=10}\big(\{\, e\in\mathcal{E} : S(e)\geq 3.0 \,\}\big) \]</div>
-        </div>
-        <div class="step-panel" data-step="3">
-          <h3 class="c-length">4 · Two-Stage Length Control</h3>
-          <p>Length is regulated twice: the prompt bounds generation to a range, then a normalizer brings the caption to the target length <i>L</i>* = 104 words.</p>
-          <div class="eq">\[ \hat{y} = G_\theta\big(q, \mathcal{C}, \mathcal{E}^{*};\ L_{\min}, L_{\max}\big), \qquad y = \mathcal{N}\big(\hat{y};\ L^{*}\big) \]</div>
-        </div>
-        <div class="step-panel" data-step="4">
-          <h3 class="c-gen">5 · Unified Entity Conditioning</h3>
-          <p>The <b>same</b> selected set \(\mathcal{E}^{*}\) is passed to both entity pathways:</p>
-          <div class="eq">\[ \hat{y} = G_\theta\big(q,\ \mathcal{C}_{\mathrm{article}},\ \mathcal{C}_{\mathrm{image}},\ \mathcal{E}^{*}\big), \qquad y = \mathcal{N}\big(\hat{y},\ \mathcal{E}^{*}\big) \]</div>
-          <ul class="ticks">
-            <li>An entity rejected by the scorer <b>cannot come back</b> through post-generation enrichment.</li>
-            <li>An entity selected as grounded <b>stays available</b> during normalization.</li>
-          </ul>
+        <div class="contrib">
+          <div class="contrib-icon c-length-bg"><i class="fas fa-ruler-horizontal"></i></div>
+          <h4>Two-Stage Length Control</h4>
+          <p>Bounded generation followed by entity-preserving semantic normalization reduces the length mismatch without
+            dropping key event information.</p>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ================================================================ EXAMPLES -->
-<section class="block" id="examples">
-  <div class="wrap">
-    <h2 class="section-title">Qualitative Examples</h2>
-    <p class="section-lead">
-      Captions with all article entities (<span class="tag-cfg base">Unfiltered · 0.6166</span>) compared with
-      VG-Cap (<span class="tag-cfg ours">VG-Cap · 0.6219</span>). Both use the same retrieval, backbone and
-      104-word target. Hover an entity chip to find it in the captions.
-    </p>
-    <div id="example-browser" class="xb"></div>
-  </div>
-</section>
+  <!-- ================================================================ METHOD -->
+  <section class="block alt" id="method">
+    <div class="wrap">
+      <h2 class="section-title">Method</h2>
+      <p class="section-lead">
+        Two stages: <b class="c-retrieval">article retrieval</b> (fixed, from ENRIC), then
+        <b class="c-context">context-grounded caption generation</b>. Click a step to see it in the figure.
+      </p>
 
-<!-- ================================================================ RESULTS -->
-<section class="block alt" id="results">
-  <div class="wrap">
-    <h2 class="section-title">Results</h2>
-    <p class="section-lead">OpenEvents-V1 public test. Overall Score is the weighted harmonic mean of the retrieval and captioning metrics.</p>
+      <div class="stepper" id="stepper" role="tablist">
+        <button class="step is-active" data-step="0" role="tab"><span
+            class="step-n c-retrieval-bg">1</span>Retrieval</button>
+        <button class="step" data-step="1" role="tab"><span class="step-n c-context-bg">2</span>Context</button>
+        <button class="step" data-step="2" role="tab"><span class="step-n c-scorer-bg">3</span>Entity Scorer</button>
+        <button class="step" data-step="3" role="tab"><span class="step-n c-length-bg">4</span>Length Control</button>
+        <button class="step" data-step="4" role="tab"><span class="step-n c-gen-bg">5</span>Unified
+          Conditioning</button>
+      </div>
 
-    <!-- (a) main comparison -->
-    <div class="card result-card">
-      <h3 class="card-title">Comparison with state-of-the-art</h3>
-      <p class="takeaway"><b>VG-Cap: 0.6219</b> (rank 1 of 7, +0.0122 vs ENRIC). Best Overall Score, with the gain coming entirely from the captioning stage.</p>
-      <div class="table-scroll" id="table-sota"></div>
-      <p class="tiny muted">* Overall Score computed from the official evaluation formula (not reported by the original authors).</p>
+      <div class="method-grid">
+        <figure class="overview-fig" id="overview-fig">
+          <img src="./static/images/figures/overview.png" class="zoomable"
+            alt="Overview of VG-Cap: article retrieval and re-ranking, then context construction, entity heuristic scorer, caption generation and two-stage length control.">
+          <div class="fig-highlight" id="fig-highlight"></div>
+          <button class="fig-all" id="fig-all" title="Show the whole figure"><i class="fas fa-expand"></i></button>
+        </figure>
+
+        <div class="step-panels">
+          <div class="step-panel is-active" data-step="0">
+            <h3 class="c-retrieval">1 · Article Retrieval &amp; Re-ranking</h3>
+            <p>VG-Cap reuses ENRIC's retrieval backbone, unchanged. InternVL-14B encodes the query image and the corpus
+              (&gt;400K images), and the top-<i>K</i> (<i>K</i> = 15) candidates are kept by cosine similarity.</p>
+            <p>An <b>uncertainty detector</b> checks three signals: the entropy of the top-<i>K</i> distribution, the
+              gap between the top-1 and top-2 scores, and the top-1 similarity. For uncertain queries only,
+              caption-based text similarity is blended in:</p>
+            <div class="eq">\[ s_{\mathrm{rerank}}(q,x_i) = \lambda\, s_{\mathrm{img}}(q,x_i) + (1-\lambda)\,
+              s_{\mathrm{text}}(q,x_i) \]</div>
+            <p class="tiny muted">The highest-scoring candidate gives the retrieved article. Retrieval is identical to
+              ENRIC in every experiment.</p>
+          </div>
+          <div class="step-panel" data-step="1">
+            <h3 class="c-context">2 · Context Construction</h3>
+            <p>The article covers much more than the depicted scene, so VG-Cap organizes the available information into
+              three groups:</p>
+            <div class="eq">\[ \mathcal{C} = \{\, \mathcal{C}_{\mathrm{article}},\ \mathcal{C}_{\mathrm{image}},\
+              \mathcal{C}_{\mathrm{entity}} \,\} \]</div>
+            <ul class="ticks">
+              <li><b>Article context</b>: a summary plus question–answer pairs (who, where, when, why, how).</li>
+              <li><b>Image context</b>: a VLM-generated description of the query image plus the editorial caption of the
+                retrieved image.</li>
+              <li><b>Entity context</b>: named entities from the article. This is the only group <b>filtered by the
+                  scorer</b>.</li>
+            </ul>
+          </div>
+          <div class="step-panel" data-step="2">
+            <h3 class="c-scorer">3 · Entity Heuristic Scorer</h3>
+            <p>Candidates come from NER over the article plus LLM keyword lists, merged by substring-aware
+              deduplication. Each candidate gets a groundedness score:</p>
+            <div class="eq">\[ S(e) = \max\!\Big(0,\ \sum_{f\in\mathcal{F}} w_f\,\phi_f(e)\Big) \]</div>
+            <div class="eq">\[ \mathcal{E}^{*} = \operatorname{TopK}_{K=10}\big(\{\, e\in\mathcal{E} : S(e)\geq 3.0
+              \,\}\big) \]</div>
+          </div>
+          <div class="step-panel" data-step="3">
+            <h3 class="c-length">4 · Two-Stage Length Control</h3>
+            <p>Length is regulated twice: the prompt bounds generation to a range, then a normalizer brings the caption
+              to the target length <i>L</i>* = 104 words.</p>
+            <div class="eq">\[ \hat{y} = G_\theta\big(q, \mathcal{C}, \mathcal{E}^{*};\ L_{\min}, L_{\max}\big), \qquad
+              y = \mathcal{N}\big(\hat{y};\ L^{*}\big) \]</div>
+          </div>
+          <div class="step-panel" data-step="4">
+            <h3 class="c-gen">5 · Unified Entity Conditioning</h3>
+            <p>The <b>same</b> selected set \(\mathcal{E}^{*}\) is passed to both entity pathways:</p>
+            <div class="eq">\[ \hat{y} = G_\theta\big(q,\ \mathcal{C}_{\mathrm{article}},\
+              \mathcal{C}_{\mathrm{image}},\ \mathcal{E}^{*}\big), \qquad y = \mathcal{N}\big(\hat{y},\
+              \mathcal{E}^{*}\big) \]</div>
+            <ul class="ticks">
+              <li>An entity rejected by the scorer <b>cannot come back</b> through post-generation enrichment.</li>
+              <li>An entity selected as grounded <b>stays available</b> during normalization.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- (c) ablation -->
-    <div class="card result-card">
-      <h3 class="card-title">Ablation: building up VG-Cap</h3>
-      <p class="takeaway">Every component adds to the Overall Score. The selector's gain comes with <b>no change in length</b>, so it reflects <b>what</b> is said, not how much.</p>
-      <div class="table-scroll" id="table-ablation"></div>
+  <!-- ================================================================ EXAMPLES -->
+  <section class="block" id="examples">
+    <div class="wrap">
+      <h2 class="section-title">Qualitative Examples</h2>
+      <p class="section-lead">
+        Captions with all article entities (<span class="tag-cfg base">Unfiltered · 0.6166</span>) compared with
+        VG-Cap (<span class="tag-cfg ours">VG-Cap · 0.6219</span>). Both use the same retrieval, backbone and
+        104-word target. Hover an entity chip to find it in the captions.
+      </p>
+      <div id="example-browser" class="xb"></div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ================================================================ BIBTEX -->
-<section class="block" id="bibtex">
-  <div class="wrap narrow">
-    <h2 class="section-title">BibTeX</h2>
-    <div class="bibtex-box">
-      <button class="copy-btn" id="copy-bib"><i class="far fa-copy"></i> <span>Copy</span></button>
-<pre><code id="bibtex-code">@inproceedings{phan2027vgcap,
+  <!-- ================================================================ RESULTS -->
+  <section class="block alt" id="results">
+    <div class="wrap">
+      <h2 class="section-title">Results</h2>
+      <p class="section-lead">OpenEvents-V1 public test. Overall Score is the weighted harmonic mean of the retrieval
+        and captioning metrics.</p>
+
+      <!-- (a) main comparison -->
+      <div class="card result-card">
+        <h3 class="card-title">Comparison with state-of-the-art</h3>
+        <p class="takeaway"><b>VG-Cap: 0.6219</b> (rank 1 of 7, +0.0122 vs ENRIC). Best Overall Score, with the gain
+          coming entirely from the captioning stage.</p>
+        <div class="table-scroll" id="table-sota"></div>
+        <p class="tiny muted">* Overall Score computed from the official evaluation formula (not reported by the
+          original authors).</p>
+      </div>
+
+      <!-- (c) ablation -->
+      <div class="card result-card">
+        <h3 class="card-title">Ablation: building up VG-Cap</h3>
+        <p class="takeaway">Every component adds to the Overall Score. The selector's gain comes with <b>no change in
+            length</b>, so it reflects <b>what</b> is said, not how much.</p>
+        <div class="table-scroll" id="table-ablation"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ BIBTEX -->
+  <section class="block" id="bibtex">
+    <div class="wrap narrow">
+      <h2 class="section-title">BibTeX</h2>
+      <div class="bibtex-box">
+        <button class="copy-btn" id="copy-bib"><i class="far fa-copy"></i> <span>Copy</span></button>
+        <pre><code id="bibtex-code">@inproceedings{phan2027vgcap,
   title     = {Grounding What Matters: Selective Entity Conditioning
                for Event-Enriched News Image Captioning},
   author    = {Phan, Van-Phuc and Pham, Minh-Tan and Tran, Mai-Khiem and Do, Trong-Le and
                Nguyen, Hai-Dang and Nguyen, Tam V. and Tran, Minh-Triet and Le, Trung-Nghia},
-  booktitle = {TODO},
+  booktitle = {SOON},
   year      = {2027}
 }</code></pre>
+      </div>
     </div>
+  </section>
+
+  <!-- ================================================================ FOOTER -->
+  <footer class="site-footer">
+    <div class="wrap narrow">
+      <p class="ack">
+        <b>Acknowledgement.</b> This research is funded by Vietnam National University – Ho Chi Minh City (VNU-HCM)
+        under Grant Number C2026-18-12. Trung-Nghia Le was funded by the Postdoctoral Scholarship Programme of
+        Vingroup Innovation Foundation (VINIF), VinUniversity, code VINIF.2025.STS.14.
+      </p>
+      <p class="credit">
+        Website adapted from the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> template,
+        licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" aria-label="Close"><i class="fas fa-times"></i></button>
+    <img alt="">
   </div>
-</section>
 
-<!-- ================================================================ FOOTER -->
-<footer class="site-footer">
-  <div class="wrap narrow">
-    <p class="ack">
-      <b>Acknowledgement.</b> This research is funded by Vietnam National University – Ho Chi Minh City (VNU-HCM)
-      under Grant Number C2026-18-12. Trung-Nghia Le was funded by the Postdoctoral Scholarship Programme of
-      Vingroup Innovation Foundation (VINIF), VinUniversity, code VINIF.2025.STS.14.
-    </p>
-    <p class="credit">
-      Website adapted from the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> template,
-      licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.
-    </p>
-  </div>
-</footer>
-
-<!-- Lightbox -->
-<div class="lightbox" id="lightbox" aria-hidden="true">
-  <button class="lightbox-close" aria-label="Close"><i class="fas fa-times"></i></button>
-  <img alt="">
-</div>
-
-<!-- Libraries -->
-<script defer src="./static/js/fontawesome.all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
-<!-- Content (edit these) -->
-<script src="./static/data/config.js"></script>
-<script src="./static/data/results.js"></script>
-<script src="./static/data/examples.js"></script>
-<!-- Page components -->
-<script src="./static/js/components/util.js"></script>
-<script src="./static/js/components/charts.js"></script>
-<script src="./static/js/components/examples.js"></script>
-<script src="./static/js/index.js"></script>
+  <!-- Libraries -->
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+  <!-- Content (edit these) -->
+  <script src="./static/data/config.js"></script>
+  <script src="./static/data/results.js"></script>
+  <script src="./static/data/examples.js"></script>
+  <!-- Page components -->
+  <script src="./static/js/components/util.js"></script>
+  <script src="./static/js/components/charts.js"></script>
+  <script src="./static/js/components/examples.js"></script>
+  <script src="./static/js/index.js"></script>
 </body>
+
 </html>
